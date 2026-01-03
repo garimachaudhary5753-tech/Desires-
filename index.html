@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Desires | Online Store</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;background:#fff;color:#333}
+    header{background:#f7c6d9;padding:20px;text-align:center}
+    h1{margin:0}
+    .container{max-width:1100px;margin:auto;padding:20px}
+    .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+    .card{border:1px solid #eee;border-radius:14px;padding:15px;box-shadow:0 4px 12px rgba(0,0,0,.06);text-align:center}
+    .card img{width:100%;border-radius:12px;margin-bottom:10px}
+    .price{font-size:22px;font-weight:bold;margin:8px 0}
+    button{background:#e75480;color:#fff;border:none;padding:12px;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;font-size:15px}
+    button.cart{background:#ff8fb1}
+    button.upi{background:#6a1b9a}
+    footer{text-align:center;padding:15px;background:#f7c6d9;margin-top:30px}
+    #cart{background:#fafafa;border:1px solid #ddd;padding:20px;margin-top:40px}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid #ddd;padding:8px;text-align:center}
+    th{background:#f0f0f0}
+    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5)}
+    .modal-content{background:#fff;max-width:300px;margin:20% auto;padding:20px;border-radius:12px;text-align:center}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Desires</h1>
+  <p>Accessories Store – Cute • Affordable • Loved</p>
+</header>
+
+<div class="container">
+<h2>Shop Our Boxes</h2>
+<div class="products">
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9">
+    <h3>Mini Desire Box</h3>
+    <div class="price">₹149</div>
+    <button class="cart" onclick="addToCart('Mini Desire Box',149)">Add to Cart</button>
+    <button onclick="openOptions('Mini Desire Box',149)">Order Now</button>
+  </div>
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1519741497674-611481863552">
+    <h3>Classic Desire Box</h3>
+    <div class="price">₹299</div>
+    <button class="cart" onclick="addToCart('Classic Desire Box',299)">Add to Cart</button>
+    <button onclick="openOptions('Classic Desire Box',299)">Order Now</button>
+  </div>
+  <div class="card">
+    <img src="https://images.unsplash.com/photo-1520975916090-3105956dac38">
+    <h3>Premium Desire Box</h3>
+    <div class="price">₹499</div>
+    <button class="cart" onclick="addToCart('Premium Desire Box',499)">Add to Cart</button>
+    <button onclick="openOptions('Premium Desire Box',499)">Order Now</button>
+  </div>
+</div>
+
+<div id="cart">
+  <h2>🛒 Cart</h2>
+  <table>
+    <thead><tr><th>Product</th><th>Amount</th></tr></thead>
+    <tbody id="cartItems"></tbody>
+  </table>
+</div>
+</div>
+
+<footer>
+  <p>© 2026 Desires</p>
+</footer>
+
+<div class="modal" id="orderModal">
+  <div class="modal-content">
+    <h3>Choose Order Method</h3>
+    <button onclick="whatsappOrder()">WhatsApp Order</button>
+    <a id="upiLink"><button class="upi">Pay via UPI</button></a>
+    <button onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<script>
+// Firebase config (replace later if needed)
+const firebaseConfig = {
+  apiKey: "AIzaSyDemo",
+  authDomain: "demo.firebaseapp.com",
+  databaseURL: "https://demo.firebaseio.com",
+  projectId: "demo",
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const whatsappNumber = '919870692723';
+const upiId = '9870692723@sbi';
+let currentProduct='', currentAmount=0;
+
+function addToCart(product,amount){
+  const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+  cart.push({product,amount});
+  localStorage.setItem('cart',JSON.stringify(cart));
+  loadCart();
+}
+
+function loadCart(){
+  const cart = JSON.parse(localStorage.getItem('cart')||'[]');
+  const tbody=document.getElementById('cartItems');
+  tbody.innerHTML='';
+  cart.forEach(i=>{tbody.innerHTML+=`<tr><td>${i.product}</td><td>₹${i.amount}</td></tr>`});
+}
+
+function openOptions(product,amount){
+  currentProduct=product;currentAmount=amount;
+  document.getElementById('upiLink').href=`upi://pay?pa=${upiId}&pn=Desires&am=${amount}&cu=INR`;
+  saveOrder(product,amount);
+  document.getElementById('orderModal').style.display='block';
+}
+
+function closeModal(){document.getElementById('orderModal').style.display='none';}
+
+function whatsappOrder(){
+  const msg=`Hello, I want to order ${currentProduct} for ₹${currentAmount}`;
+  window.location.href=`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
+}
+
+function saveOrder(product,amount){
+  db.ref('orders').push({product,amount,date:new Date().toLocaleString()});
+}
+
+loadCart();
+</script>
+</body>
+</html>
