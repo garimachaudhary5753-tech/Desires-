@@ -1,134 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Desires | Online Store</title>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <style>
-    body{font-family:Arial,sans-serif;margin:0;background:#fff;color:#333}
-    header{background:#f7c6d9;padding:20px;text-align:center}
-    h1{margin:0}
-    .container{max-width:1100px;margin:auto;padding:20px}
-    .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
-    .card{border:1px solid #eee;border-radius:14px;padding:15px;box-shadow:0 4px 12px rgba(0,0,0,.06);text-align:center}
-    .card img{width:100%;border-radius:12px;margin-bottom:10px}
-    .price{font-size:22px;font-weight:bold;margin:8px 0}
-    button{background:#e75480;color:#fff;border:none;padding:12px;border-radius:8px;cursor:pointer;width:100%;margin-top:8px;font-size:15px}
-    button.cart{background:#ff8fb1}
-    button.upi{background:#6a1b9a}
-    footer{text-align:center;padding:15px;background:#f7c6d9;margin-top:30px}
-    #cart{background:#fafafa;border:1px solid #ddd;padding:20px;margin-top:40px}
-    table{width:100%;border-collapse:collapse}
-    th,td{border:1px solid #ddd;padding:8px;text-align:center}
-    th{background:#f0f0f0}
-    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5)}
-    .modal-content{background:#fff;max-width:300px;margin:20% auto;padding:20px;border-radius:12px;text-align:center}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desires Accessories | Luxe Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --p-pink: #ff8fb1; --d-pink: #e75480; --soft-bg: #fffafb; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--soft-bg); color: #333; overflow-x: hidden; }
+
+        /* Floating WhatsApp Button */
+        .wa-float {
+            position: fixed; bottom: 20px; right: 20px; background: #25d366; color: white;
+            width: 60px; height: 60px; border-radius: 50%; text-align: center;
+            font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 1000;
+            display: flex; align-items: center; justify-content: center; text-decoration: none;
+        }
+
+        header { background: white; padding: 50px 20px; text-align: center; border-bottom: 2px solid #fce4ec; }
+        header h1 { font-family: 'Playfair Display', serif; font-size: 45px; color: var(--d-pink); margin: 0; }
+        
+        .container { max-width: 1100px; margin: auto; padding: 20px; }
+        
+        .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 40px; }
+        .card { 
+            background: #fff; border-radius: 20px; overflow: hidden; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05); transition: 0.4s; text-align: center;
+        }
+        .card:hover { transform: scale(1.03); box-shadow: 0 15px 35px rgba(231, 84, 128, 0.2); }
+        .card img { width: 100%; height: 250px; object-fit: cover; }
+        .card-info { padding: 20px; }
+
+        .btn-buy { 
+            background: var(--d-pink); color: white; border: none; 
+            padding: 12px 25px; border-radius: 50px; cursor: pointer; 
+            font-weight: 600; width: 100%; transition: 0.3s;
+        }
+        .btn-buy:hover { background: #c63d66; letter-spacing: 1px; }
+
+        /* Review Section */
+        .review-box { background: white; padding: 30px; border-radius: 20px; margin-top: 50px; }
+        .stars { color: #ffbc00; font-size: 20px; }
+
+        /* Payment Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; }
+        .modal-content { background: white; width: 90%; max-width: 400px; margin: 15% auto; padding: 30px; border-radius: 25px; text-align: center; position: relative; }
+    </style>
 </head>
 <body>
+
+<a href="https://wa.me/919870692723" class="wa-float" target="_blank">📱</a>
+
 <header>
-  <h1>Desires</h1>
-  <p>Accessories Store – Cute • Affordable • Loved</p>
+    <h1>Desires Accessories</h1>
+    <p>Handpicked Accessories for Every Beautiful You</p>
 </header>
 
 <div class="container">
-<h2>Shop Our Boxes</h2>
-<div class="products">
-  <div class="card">
-    <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9">
-    <h3>Mini Desire Box</h3>
-    <div class="price">₹149</div>
-    <button class="cart" onclick="addToCart('Mini Desire Box',149)">Add to Cart</button>
-    <button onclick="openOptions('Mini Desire Box',149)">Order Now</button>
-  </div>
-  <div class="card">
-    <img src="https://images.unsplash.com/photo-1519741497674-611481863552">
-    <h3>Classic Desire Box</h3>
-    <div class="price">₹299</div>
-    <button class="cart" onclick="addToCart('Classic Desire Box',299)">Add to Cart</button>
-    <button onclick="openOptions('Classic Desire Box',299)">Order Now</button>
-  </div>
-  <div class="card">
-    <img src="https://images.unsplash.com/photo-1520975916090-3105956dac38">
-    <h3>Premium Desire Box</h3>
-    <div class="price">₹499</div>
-    <button class="cart" onclick="addToCart('Premium Desire Box',499)">Add to Cart</button>
-    <button onclick="openOptions('Premium Desire Box',499)">Order Now</button>
-  </div>
+    <div class="products">
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9">
+            <div class="card-info">
+                <h3>Mini Desire Box</h3>
+                <div style="font-size: 20px; color: #e75480; font-weight: bold; margin-bottom: 15px;">₹149</div>
+                <button class="btn-buy" onclick="pay('Mini Desire Box', 149)">Order Now</button>
+            </div>
+        </div>
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1519741497674-611481863552">
+            <div class="card-info">
+                <h3>Classic Desire Box</h3>
+                <div style="font-size: 20px; color: #e75480; font-weight: bold; margin-bottom: 15px;">₹299</div>
+                <button class="btn-buy" onclick="pay('Classic Desire Box', 299)">Order Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="review-box">
+        <h2 style="font-family: 'Playfair Display';">Happy Customers 💖</h2>
+        <div id="revList">
+            <p><strong>Pooja:</strong> "Loved the quality! ⭐⭐⭐⭐⭐"</p>
+        </div>
+        <input type="text" id="uName" placeholder="Your Name" style="width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 10px;">
+        <textarea id="uRev" placeholder="Write something..." style="width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 10px;"></textarea>
+        <button onclick="addRev()" style="margin-top: 10px; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 10px; cursor: pointer;">Post Review</button>
+    </div>
 </div>
 
-<div id="cart">
-  <h2>🛒 Cart</h2>
-  <table>
-    <thead><tr><th>Product</th><th>Amount</th></tr></thead>
-    <tbody id="cartItems"></tbody>
-  </table>
-</div>
-</div>
-
-<footer>
-  <p>© 2026 Desires</p>
-</footer>
-
-<div class="modal" id="orderModal">
-  <div class="modal-content">
-    <h3>Choose Order Method</h3>
-    <button onclick="whatsappOrder()">WhatsApp Order</button>
-    <a id="upiLink"><button class="upi">Pay via UPI</button></a>
-    <button onclick="closeModal()">Close</button>
-  </div>
+<div id="payModal" class="modal">
+    <div class="modal-content">
+        <h2>Checkout 💸</h2>
+        <p id="itemDetail"></p>
+        <a id="upi" href="#" style="display: block; background: #6a1b9a; color: white; padding: 15px; text-decoration: none; border-radius: 50px; font-weight: bold;">Pay via UPI</a>
+        <p style="font-size: 12px; margin-top: 15px; color: #666;">Payment के बाद WhatsApp पर स्क्रीनशॉट भेजें।</p>
+        <button onclick="closeM()" style="margin-top: 20px; background: none; border: none; text-decoration: underline; cursor: pointer;">Cancel</button>
+    </div>
 </div>
 
 <script>
-// Firebase config (replace later if needed)
-const firebaseConfig = {
-  apiKey: "AIzaSyDemo",
-  authDomain: "demo.firebaseapp.com",
-  databaseURL: "https://demo.firebaseio.com",
-  projectId: "demo",
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-const whatsappNumber = '919870692723';
-const upiId = '9870692723@sbi';
-let currentProduct='', currentAmount=0;
-
-function addToCart(product,amount){
-  const cart = JSON.parse(localStorage.getItem('cart')||'[]');
-  cart.push({product,amount});
-  localStorage.setItem('cart',JSON.stringify(cart));
-  loadCart();
-}
-
-function loadCart(){
-  const cart = JSON.parse(localStorage.getItem('cart')||'[]');
-  const tbody=document.getElementById('cartItems');
-  tbody.innerHTML='';
-  cart.forEach(i=>{tbody.innerHTML+=`<tr><td>${i.product}</td><td>₹${i.amount}</td></tr>`});
-}
-
-function openOptions(product,amount){
-  currentProduct=product;currentAmount=amount;
-  document.getElementById('upiLink').href=`upi://pay?pa=${upiId}&pn=Desires&am=${amount}&cu=INR`;
-  saveOrder(product,amount);
-  document.getElementById('orderModal').style.display='block';
-}
-
-function closeModal(){document.getElementById('orderModal').style.display='none';}
-
-function whatsappOrder(){
-  const msg=`Hello, I want to order ${currentProduct} for ₹${currentAmount}`;
-  window.location.href=`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
-}
-
-function saveOrder(product,amount){
-  db.ref('orders').push({product,amount,date:new Date().toLocaleString()});
-}
-
-loadCart();
+    function pay(name, price) {
+        document.getElementById('itemDetail').innerText = name + " - ₹" + price;
+        document.getElementById('upi').href = `upi://pay?pa=9870692723@sbi&pn=Desires&am=${price}&cu=INR`;
+        document.getElementById('payModal').style.display = 'block';
+    }
+    function closeM() { document.getElementById('payModal').style.display = 'none'; }
+    function addRev() {
+        let n = document.getElementById('uName').value;
+        let r = document.getElementById('uRev').value;
+        if(n && r) {
+            document.getElementById('revList').innerHTML += `<p><strong>${n}:</strong> "${r}" ⭐⭐⭐⭐⭐</p>`;
+            document.getElementById('uName').value = ''; document.getElementById('uRev').value = '';
+        }
+    }
 </script>
 </body>
 </html>
